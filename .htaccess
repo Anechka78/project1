@@ -1,0 +1,6 @@
+AddDefaultCharset utf-8
+RewriteEngine On
+
+RewriteCond %{REQUEST_FILENAME} !-f
+
+RewriteRule ^(.*)$ /public/$1

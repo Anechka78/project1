@@ -1,0 +1,19 @@
+{
+    "name": "anna/www",
+    "authors": [
+        {
+            "name": "Anechka78",
+            "email": "7winx@bk.ru"
+        }
+    ],
+    "require": {},
+    "require-dev": {
+        "twbs/bootstrap": "4.3.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "project\\": "project",
+            "app\\": "app"
+        }
+    }
+}
