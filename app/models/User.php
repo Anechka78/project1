@@ -7,6 +7,7 @@ class User extends Model{
 
     public $table = 'admin';
 
+
     public function login(){
         $login    = !empty(trim($_POST['login'])) ? trim($_POST['login']) : null;
         $password = !empty(trim($_POST['password'])) ? trim($_POST['password']) : null;
@@ -23,28 +24,6 @@ class User extends Model{
             }
         }
         return false;
-    }
-
-
-
-    /**
-     * Проверка, авторизован пользователь или нет
-     * @return bool
-     */
-    public static function isUser(){
-        if(isset($_SESSION['user'])){
-            return($_SESSION['user']);
-        }else{
-            return false;
-        }
-    }
-
-    /**
-     * Проверка, является ли пользователь администратором сайта
-     * @return bool
-     */
-    public static function isAdmin(){
-        return(isset($_SESSION['user']) && $_SESSION['user']['role'] == 'admin');
     }
 
 

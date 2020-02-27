@@ -32,11 +32,10 @@ class MainController extends AppController{
         $start = $pagination->getStart();
 
         $tasks = array_slice($alltasks, $start, $perpage);
-        $users = $model->findAll('users');
 
         View::setMeta('Страница задач', 'Описание страницы задач', 'Ключевые слова');
 
-        $this->set(compact('tasks', 'pagination', 'total', 'users'));
+        $this->set(compact('tasks', 'pagination', 'total'));
     }
 
     public function addAction(){
@@ -44,17 +43,17 @@ class MainController extends AppController{
         if(!empty($_POST)){
             $data = $_POST;
 
-            $user = $model->validateUser($data);
-            if(!$user){
-                $_SESSION['error'] = 'Такого пользователя не существует';
+            $sort_field = isset($_GET['sort']) ? $_GET['sort'] : false;
+            $sort_order = isset($_GET['order']) ? $_GET['order'] : false;
+
+            $task = $model->addNewTask($data);
+            if($task){
+                $_SESSION['success'] = 'Задача добавлена';
                 redirect('/');
             }else{
-                $task = $model->addNewTask($user['id'], $data['add_task_desk'], $status='0');
-                if($task){
-                    $_SESSION['success'] = 'Задача добавлена';
-                    redirect('/');
-                }
+                redirect('/');
             }
+
         }
         $_SESSION['error'] = 'Произошла ошибка при добавлении задачи';
         redirect('/');
@@ -63,7 +62,7 @@ class MainController extends AppController{
     public function updateAction(){
 
         if(empty($_SESSION['user'])){
-            $_SESSION['error']='У Вас нет прав доступа к данной странице';
+            $_SESSION['error']='У Вас нет прав доступа к данной странице. </br> <a href="/user/index">Перейти на страницу авторизации</a>';
             redirect('/');
         }
 
@@ -89,11 +88,10 @@ class MainController extends AppController{
         $start = $pagination->getStart();
 
         $tasks = array_slice($alltasks, $start, $perpage);
-        $users = $model->findAll('users');
 
         View::setMeta('Страница редактирования задач', 'Описание страницы редактирования задач', 'Ключевые слова');
 
-        $this->set(compact('tasks', 'pagination', 'total', 'users'));
+        $this->set(compact('tasks', 'pagination', 'total'));
     }
 
 

@@ -12,24 +12,25 @@ class UserController extends AppController{
 
     public function loginAction(){
         if(!empty($_POST)){
-
+            if(empty(trim($_POST['login']))){
+                $_SESSION['error'] = 'Логин не может быть пустым';
+                redirect('/user/index');
+            }
+            if(empty(trim($_POST['password']))){
+                $_SESSION['error'] = 'Пароль не может быть пустым';
+                redirect('/user/index');
+            }
             $user = new User();
-            $resData = [];
             if($user->login()){
                 $_SESSION['success'] = 'Вы успешно авторизованы';
-
-//                $resData['success'] = 1;
-//                $resData['message'] = $_SESSION['success'];
-//                $resData['user_login'] = $_SESSION['user']['login'];
-
             }else{
                 $_SESSION['error'] = 'Логин/пароль введены неверно';
-//                $resData['success'] = 0;
-//                $resData['message'] = $_SESSION['error'];
+                redirect('/user/index');
             }
             redirect('/');
         }
-
+        $_SESSION['error'] = 'Данных нет';
+        redirect('/user/index');
     }
 
     public function logoutAction(){

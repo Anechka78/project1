@@ -32,3 +32,6 @@ function h($str){
     return htmlspecialchars($str, ENT_QUOTES);
 }
 
+function l($str){
+    return htmlentities($str, ENT_COMPAT, 'UTF-8');
+}

@@ -7,8 +7,11 @@ use project\core\base\Model;
 class Main extends Model
 {
     public $table = 'tasks';
+    private $patternArr = [
+        'email' => '/^([.a-z0-9_-]+)@([.a-z0-9-_]+)\.([a-z0-9_-]{1,6})$/i',
+    ];
 
-    private $sort_field = ['name', 'email', 'status'];
+    private $sort_field = ['user_name', 'user_email', 'status'];
     private $sort_order = ['ASC', 'DESC'];
 
     public function validateSortField($sort_field){
@@ -28,16 +31,12 @@ class Main extends Model
     }
 
     public function getAllTasks(){
-        $sql = "SELECT t.*, u.name as name, u.email as email FROM {$this->table} AS t
-                LEFT JOIN `users` AS `u` ON t.user_id = u.id";
-        $tasks = $this->findBySql($sql, []);
-
+        $tasks = $this->findAll();
         return $tasks;
     }
 
     public function getAllTasksBySort($sort_field, $sort_order){
-        $sql = "SELECT t.*, u.name as name, u.email as email FROM {$this->table} AS t
-                LEFT JOIN `users` AS `u` ON t.user_id = u.id ORDER BY {$sort_field} {$sort_order}";
+        $sql = "SELECT * FROM {$this->table} ORDER BY {$sort_field} {$sort_order}";
         $tasks = $this->findBySql($sql, []);
 
         return $tasks;
@@ -50,11 +49,24 @@ class Main extends Model
          }
         return $user;
     }
-    public function addNewTask($id, $desc, $status){
+    public function addNewTask($v){
+
         $data=[];
-        $data['user_id'] = $id;
-        $data['task'] = $desc;
-        $data['status'] = $status;
+        if(empty(trim($v['add_task_desk']))){
+            $_SESSION['error'] = 'Задача не может быть пустой!';
+            return false;
+        }elseif(empty(trim($v['user_name']))){
+            $_SESSION['error'] = 'Пользователь должен быть указан!';
+            return false;
+        }elseif(!$this->checkEmail(trim($v['add_task_user_email']))){
+            $_SESSION['error'] = 'E-mail указан некорректно!';
+            return false;
+        }
+        $data['user_name'] = trim($v['user_name']);
+        $data['user_email'] = trim($v['add_task_user_email']);
+        $data['task'] = trim($v['add_task_desk']);
+        $data['status'] = 0;
+        $data['edit'] = 0;
         $res = $this->insertInTable('tasks', $data);
         if($res){
             return true;
@@ -62,5 +74,8 @@ class Main extends Model
         return false;
     }
 
+    public function checkEmail($email){
+        return (preg_match($this->patternArr['email'], $email, $matches)===1)?true:false;
+    }
 
 }
